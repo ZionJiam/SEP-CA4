@@ -32,7 +32,7 @@
                 }
                 return ok;
             }
-
+ 
             function pdpaWindow() {
                 var myWindow = window.open("pdpa.html");
             }
@@ -78,27 +78,15 @@
                                         <h4>Personal Information</h4>
                                         <div class="form-group">
                                             <label>Name</label>
-                                            <input class="form-control" required="true" name="name" type="text" value="<%if (member.getName() == null) {
-                                                    out.print("");
-                                                } else {
-                                                    out.print(member.getName());
-                                                }%>">
+                                            <input class="form-control" required="true" name="name" type="text" value="">
                                         </div>
                                         <div class="form-group">
                                             <label>E-mail Address</label>
-                                            <input class="form-control" required="true" value="<%if (member.getEmail() == null) {
-                                                    out.print("");
-                                                } else {
-                                                    out.print(member.getEmail());
-                                                }%>" disabled/>
+                                            <input class="form-control" required="true" value="" disabled/>
                                         </div>
                                         <div class="form-group">
                                             <label>Phone</label>
-                                            <input class="form-control" required="true" type="text" name="phone" value="<%if (member.getPhone() == null) {
-                                                    out.print("");
-                                                } else {
-                                                    out.print(member.getPhone());
-                                                }%>">
+                                            <input class="form-control" required="true" type="text" name="phone" value="">
                                         </div>
                                         <div class="form-group">
                                             <label>Country</label>
@@ -360,11 +348,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label>Address</label>
-                                            <input class="form-control" type="text" required="true" name="address" value="<%if (member.getAddress() == null) {
-                                                    out.print("");
-                                                } else {
-                                                    out.print(member.getAddress());
-                                                }%>">
+                                            <input class="form-control" type="text" required="true" name="address" value="">
                                         </div>
                                         <div class="form-group">
                                             <label>Set Challenge Question</label>
@@ -386,26 +370,18 @@
                                                     }%>>What is your favourite animal?</option>
                                             </select>
                                             <input class="form-control" type="text" required="true" name="securityAnswer" value="<%if (member.getSecurityAnswer() == null) {
-                                                    out.print("");
+                                                    out.println("");
                                                 } else {
-                                                    out.print(member.getSecurityAnswer());
+                                                    out.println(member.getSecurityAnswer());
                                                 }%>">
                                         </div>
                                         <div class="form-group">
                                             <label>Age</label>
-                                            <input class="form-control" name="age" step="1" type="number" min="1" max="150" value="<%if (member.getAge() == null) {
-                                                    out.print("");
-                                                } else {
-                                                    out.print(member.getAge());
-                                                }%>">
+                                            <input class="form-control" name="age" step="1" type="number" min="1" max="150" value="">
                                         </div>
                                         <div class="form-group">
                                             <label>Income per annum (in USD)</label>
-                                            <input class="form-control" name="income" step="1" type="number" min="0" max="2147483646" value="<%if (member.getIncome() == null) {
-                                                    out.print("");
-                                                } else {
-                                                    out.print(member.getIncome());
-                                                }%>">
+                                            <input class="form-control" name="income" step="1" type="number" min="0" max="2147483646" value="">
                                         </div>
                                         <div class="form-group">
                                             <input type="checkbox" name="serviceLevelAgreement"> Allow us to use your particulars to serve you better?<br/>Checking the box above indicates that you agree to our <a onclick="pdpaWindow()">personal data protection policy.</a>
@@ -426,7 +402,7 @@
                                                     <input type="submit" value="Submit" class="btn btn-primary"/>
                                                     <input type="reset" value="Reset" class="btn btn-primary"/>
                                                 </div>
-                                                <input type="hidden" value="<%=member.getId()%>" name="id"/>
+                                                <input type="hidden" value="<%=member.getEmail()%>" name="email"/>
                                             </div>
                                         </div>
                                     </form>
