@@ -4,6 +4,7 @@ import CorporateManagement.FacilityManagement.FacilityManagementBeanLocal;
 import EntityManager.CountryEntity;
 import OperationalCRM.LoyaltyAndRewards.LoyaltyAndRewardsBeanLocal;
 import EntityManager.LoyaltyTierEntity;
+import HelperClasses.Furniture;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.ejb.EJB;
@@ -16,12 +17,14 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs  .client.Invocation;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import HelperClasses.Member;
+import javax.ws.rs.core.GenericType;
 
-public class ECommerce_MemberLoginServlet extends HttpServlet {
+public class ECommerce_GetMember extends HttpServlet {
 
     @EJB
     private FacilityManagementBeanLocal facilityManagementBean;
@@ -32,22 +35,15 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
-            Cookie cookie = new Cookie("memberId", email);
-            cookie.setMaxAge(60 * 60); //1 hour
-            response.addCookie(cookie);
-
             HttpSession session = request.getSession();
+            String email = (String) session.getAttribute("memberEmail");
+            Member member = getMember(email);
 
-            String memberEmail = loginMember(email, password);
+            if (member != null) {
+                session.setAttribute("memberName", member.getName());
 
-            if (memberEmail != null) {
-                List<CountryEntity> countries = facilityManagementBean.getListOfCountries();
-                session.setAttribute("countries", countries);
-
-                session.setAttribute("memberEmail", email);
-                response.sendRedirect("ECommerce_GetMember");
+                session.setAttribute("member", member);
+                response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp");
             } else {
                 result = "Login fail. Username or password is wrong or account is not activated.";
                 response.sendRedirect("/IS3102_Project-war/B/SG/memberLogin.jsp?errMsg=" + result);
@@ -59,12 +55,11 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
         }
     }
 
-    public String loginMember(String email, String password) {
+    public Member getMember(String email) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client
-                .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.memberentity").path("login")
-                .queryParam("email", email)
-                .queryParam("password", password);
+                .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.memberentity").path("profile")
+                .queryParam("email", email);
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.get();
         System.out.println("status: " + response.getStatus());
@@ -73,8 +68,9 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
             return null;
         }
 
-        email = response.readEntity(String.class);
-        return email;
+        Member member = response.readEntity(new GenericType<Member>() {
+        });
+        return member;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
