@@ -2,8 +2,6 @@ package B_servlets;
 
 import CorporateManagement.FacilityManagement.FacilityManagementBeanLocal;
 import EntityManager.CountryEntity;
-import OperationalCRM.LoyaltyAndRewards.LoyaltyAndRewardsBeanLocal;
-import EntityManager.LoyaltyTierEntity;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.ejb.EJB;
@@ -16,7 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs  .client.Invocation;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -41,11 +39,10 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
             HttpSession session = request.getSession();
 
             String memberEmail = loginMember(email, password);
-
+            
             if (memberEmail != null) {
                 List<CountryEntity> countries = facilityManagementBean.getListOfCountries();
                 session.setAttribute("countries", countries);
-
                 session.setAttribute("memberEmail", email);
                 response.sendRedirect("ECommerce_GetMember");
             } else {
@@ -65,6 +62,7 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
                 .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.memberentity").path("login")
                 .queryParam("email", email)
                 .queryParam("password", password);
+   
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.get();
         System.out.println("status: " + response.getStatus());
@@ -76,7 +74,6 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
         email = response.readEntity(String.class);
         return email;
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -115,5 +112,4 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }
