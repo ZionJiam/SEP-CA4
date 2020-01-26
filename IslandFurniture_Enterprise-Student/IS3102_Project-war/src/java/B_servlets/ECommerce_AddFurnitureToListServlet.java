@@ -12,8 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-//THEY GOT A SHOPPING CART HELPER CLASS
-import HelperClasses.ShoppingCartLineItem;
+import HelperClasses.ShoppingCartLineItem;//THEY GOT A SHOPPING CART HELPER CLASS
 import java.util.ArrayList;
 import javax.servlet.http.HttpSession;
 /**
@@ -24,6 +23,7 @@ import javax.servlet.http.HttpSession;
 public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
 
     ArrayList<ShoppingCartLineItem> shoppingCartItems = new ArrayList<>();
+    private String message;
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -31,8 +31,23 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             System.out.println("ECommerce_AddFurnitureToListServlet processRequest START");
             HttpSession session = request.getSession();
-            boolean exists;
             String SKUstring = request.getParameter("SKU");
+            boolean exists = false;//not initialised smh
+            int id = 0; //shopping cart helperclass has id... //int id has not been initialised
+            
+            for (int i=0; i<shoppingCartItems.size(); i++) {
+                if(shoppingCartItems.get(i).getSKU().equals(SKUstring)){
+                    exists = true;
+                    id = 1;
+                }
+            }//end of for loop
+            
+            if(exists){
+                shoppingCartItems.get(id).setQuantity(shoppingCartItems.get(id).getQuantity()+1);//add one from existing amount in cart
+                session.setAttribute("shoppingCart", shoppingCartItems);
+                message = "Item added to cart";
+                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?");
+            }
             
         }
     }

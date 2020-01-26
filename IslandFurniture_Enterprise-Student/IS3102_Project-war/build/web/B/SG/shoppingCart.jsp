@@ -131,7 +131,7 @@
                                                         %>
                                                         <tr class="cart_table_item">
                                                             <td class="product-remove">
-                                                                <input type="checkbox" name="delete" value="" />
+                                                                <input type="checkbox" name="delete" value="<%=item.getSKU()%>" />
                                                             </td>
                                                             <td class="product-thumbnail">
                                                                 <a href="furnitureProductDetails.jsp">
@@ -140,10 +140,13 @@
                                                             </td>
                                                             <td class="product-name">
                                                                 <a class="productDetails" href="furnitureProductDetails.jsp">Insert product name</a>
+                                                                <a class="productDetails" href="furnitureProductDetails.jsp?"><%=item.getName()%></a>
                                                             </td>
                                                             <td class="product-price">
                                                                 $<span class="amount" id="price<%=item.getSKU()%>">
                                                                     insert price here
+                                                                $<span class="amount" id="price<%=item.getSKU()%>">
+                                                                    <%=item.getPrice()%>
                                                                 </span>
                                                             </td>
                                                             <td class="product-quantity">
