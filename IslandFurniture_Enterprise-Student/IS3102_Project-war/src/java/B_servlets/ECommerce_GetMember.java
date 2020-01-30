@@ -22,8 +22,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import HelperClasses.Member;
+import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.core.GenericType;
 
+@WebServlet(name= "ECommerce_GetMember", urlPatterns = {"/ECommerce_GetMember"})
 public class ECommerce_GetMember extends HttpServlet {
 
     @EJB
