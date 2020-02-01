@@ -34,12 +34,12 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        HttpSession session = request.getSession();
+        String urlPrefix = (String) session.getAttribute("URLprefix");
         PrintWriter out = response.getWriter();
         System.out.println("ECommerce_AddFurnitureToListServlet START");
         try{
-            HttpSession session = request.getSession();
             // http:// is the URL prefix, which specifies the protocol used to access the location. techterms.com – the server name or IP address of the server. /definition/url – the path to the directory or file.
-            String urlPrefix = (String) session.getAttribute("URLprefix");
             
             if (urlPrefix==null){
                 response.sendRedirect("/IS3102_Project-war/B/SG/index.jsp");
@@ -84,10 +84,21 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
                                 response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?errMsg=Item unavailable. Cannot add to cart.");
                                 return; //64.
                             }
+                            else{
+                                item.setQuantity(item.getQuantity()+1);
+                            }
+                            System.out.println("item quantity: "+item.getQuantity());
+                            break;
                         }
                     }
                 }
             }
+            session.setAttribute("shoppingCart", shoppingCartItems);
+            response.sendRedirect("/IS3102_Project-war/B/"+urlPrefix+"shoppingCart.jsp?goodMsg=Item has been added.");
+        } catch(Exception ex){
+            System.out.println("Exception Occured!");
+            System.out.println(ex);
+            response.sendRedirect("/IS3102_Project-war/B/"+urlPrefix+"Exception occured. Item was not added to cart.");
         }
     }
     
@@ -115,6 +126,7 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
             System.out.println(ex);
             return 0;// no QUANtity
         }
+        
         //return 0;
     }
 
@@ -156,5 +168,5 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
+  //wot is this
 }
