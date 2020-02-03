@@ -27,10 +27,14 @@
     <jsp:include page="header.html" />
     <body>
         <%
+            //Fixed for loop to allow information to be shown
             List<StoreEntity> storesInCountry = (List<StoreEntity>) session.getAttribute("storesInCountry");
             List<Furniture> furnitures = (List<Furniture>) (session.getAttribute("furnitures"));
-            /*define your variables here*/
-            /*set your variables here*/
+            Furniture furniture = new Furniture();
+            for(int j=0;j<furnitures.size();j++){
+                if(sku.equals(furnitures.get(j).getSKU()))
+                     furniture = furnitures.get(j);
+            }
         %>
         <div class="body">
             <jsp:include page="menu2.jsp" />
@@ -51,40 +55,40 @@
                             <div class="col-md-6">
                                 <div>
                                     <div class="thumbnail">
-                                        <img alt="" class="img-responsive img-rounded" src="../../..<%/*insert code here*/%>">
+                                        <img alt="" class="img-responsive img-rounded" src="../../..<%=furniture.getImageUrl()%>">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="summary entry-summary">
-                                    <h2 class="shorter"><strong>Insert category name</strong></h2>
+                                    <h2 class="shorter"><strong><%=furniture.getName()%></strong></h2>
                                     <%
                                         if (isMemberLoggedIn == true) {
                                     %>
                                     <form action="../../ECommerce_AddFurnitureToListServlet">
-                                        <input type="hidden" name="id" value="<%/*insert code here*/%>"/>
-                                        <input type="hidden" name="SKU" value="<%/*insert code here*/%>"/>
-                                        <input type="hidden" name="price" value="<%/*insert code here*/%>"/>
-                                        <input type="hidden" name="name" value="<%/*insert code here*/%>"/>
-                                        <input type="hidden" name="imageURL" value="<%/*insert code here*/%>"/>
+                                        <input type="hidden" name="id" value="<%=furniture.getId()%>"/>
+                                        <input type="hidden" name="SKU" value="<%=furniture.getSKU()%>"/>
+                                        <input type="hidden" name="price" value="<%=furniture.getPrice()+"0"%>"/>
+                                        <input type="hidden" name="name" value="<%=furniture.getName()%>"/>
+                                        <input type="hidden" name="imageURL" value="<%=furniture.getImageUrl()%>"/>
                                         <input type="submit" name="btnEdit" class="btn btn-primary" id="<%/*insert code here*/%>" value="Add To Cart"/>
                                     </form>
                                     <%}%>
-                                    <p class="price"><h4 class="amount"><%/*insert code here*/%></h4></p>
+                                    <p class="price"><h4 class="amount">$<%=furniture.getPrice()%></h4></p>
                                     <strong>Description</strong>
                                     <p class="taller">
-                                        <%/*insert code here*/%>
+                                        <%=furniture.getDescription()%>
                                     </p>
                                     <p>
-                                        Height: <%/*insert code here*/%><br/>
-                                        Length: <%/*insert code here*/%><br/>
-                                        Width: <%/*insert code here*/%>
+                                        Height: <%=furniture.getHeight()%><br/>
+                                        Length: <%=furniture.getLength()%><br/>
+                                        Width: <%=furniture.getWidth()%>
                                     </p>
                                     <div class="product_meta">
-                                        <span class="posted_in">Category: <a rel="tag" href="../../ECommerce_FurnitureCategoryServlet?cat=<%/*insert code here*/%>"><%/*insert code here*/%></a></span>
+                                        <span class="posted_in">Category: <a rel="tag" href="../../ECommerce_FurnitureCategoryServlet?cat=<%=furniture.getCategory()%>"><%=furniture.getCategory()%></a></span>
                                     </div>
                                     <br/><br/>
-
+ 
                                     <div class="row">
                                         <div class="col-md-4">
                                             <form action="../../ECommerce_StockAvailability">

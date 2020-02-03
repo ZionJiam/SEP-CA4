@@ -86,7 +86,7 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return list;
     }
 
-    // New Code
+    // New Code 
     @GET
     @Path("profile")
     @Produces("application/json")
