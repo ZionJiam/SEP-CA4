@@ -6,6 +6,7 @@
 package B_servlets;
 
 import HelperClasses.Member;
+import HelperClasses.SalesRecord;
 import HelperClasses.ShoppingCartLineItem;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,6 +22,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -44,37 +46,44 @@ public class ECommerce_PaymentServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        System.out.println("ECommerce_PaymentServlet start");
+
         try {
             HttpSession session = request.getSession();
             ArrayList<String> skuList = new ArrayList<>();
-
+            System.out.println("ECommerce_PaymentServlet 0");
             long countryId = (long) session.getAttribute("countryID");
             Member member = (Member) session.getAttribute("member");
+            System.out.println("Member id: " + member.getId());
             ArrayList<ShoppingCartLineItem> shoppingCart = (ArrayList<ShoppingCartLineItem>) session.getAttribute("shoppingCart");
-
+            System.out.println("ECommerce_PaymentServlet 1");
             for (ShoppingCartLineItem item : shoppingCart) {
                 skuList.add(item.getSKU());
             }
-
+             System.out.println("ECommerce_PaymentServlet 11");
             double totalPrice = (double) session.getAttribute("totalPrice");
-            int salesRecordId = createSalesRecord(member, totalPrice);
+             System.out.println("ECommerce_PaymentServlet totalPrice:" + totalPrice);
+            long salesRecordId = createSalesRecord(member, totalPrice);
             int itemCount = 0;
 
+            System.out.println("ECommerce_PaymentServlet: id: " + salesRecordId);
+
             if (salesRecordId == 0) {
-                session.setAttribute("errMsg", "Error During Transaction");
-                session.setAttribute("goodMsg", null);
+                String errMsg = "Error During Transaction";
+                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=" + errMsg);
             } else {
                 for (ShoppingCartLineItem item : shoppingCart) {
+                    System.out.println("item  :D: " + item.getId());
                     if (createLineItemRecord(salesRecordId, Long.parseLong(item.getId()), item.getQuantity(), item)) {
                         itemCount++;
                     }
                 }
-
                 shoppingCart.clear();
-                session.setAttribute("goodMsg", "Transaction Successful");
+                String goodMsg = "Transaction Successful";
+                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?goodMsg=" + goodMsg);
             }
-
-            response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp");
+            
+            System.out.println("ECommerce_PaymentServlet 3");
         } catch (Exception ex) {
             out.println("\n\n " + ex.getMessage());
         }
@@ -119,23 +128,23 @@ public class ECommerce_PaymentServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private boolean createLineItemRecord(int salesRecordId, long itemEntityID, int quantity, ShoppingCartLineItem item) {
-                try {
+    private boolean createLineItemRecord(long salesRecordId, long itemEntityID, int quantity, ShoppingCartLineItem item) {
+        try {
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target("http://localhost:8080/IS3102_WebService-Student/webresources/commerce/")
-                    .path("createECommerceTransactionRecord")
+            WebTarget target = client.target("http://localhost:8080/IS3102_WebService-Student/webresources/commerce")
+                    .path("createEcommerceLineItemRecord")
                     .queryParam("salesRecordId", salesRecordId)
-                    .queryParam("itemEntityId",itemEntityID)
+                    .queryParam("itemEntityId", itemEntityID)
                     .queryParam("quantity", quantity);
-            
+
             Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
             Response response = invocationBuilder.put(Entity.entity(item, MediaType.APPLICATION_JSON));
             System.out.println("status: " + response.getStatus());
-            
-            if(response.getStatus() != 201){
+
+            if (response.getStatus() != 201) {
                 return false;
             }
-            
+
             return true;
 
         } catch (Exception ex) {
@@ -144,25 +153,28 @@ public class ECommerce_PaymentServlet extends HttpServlet {
         }
     }
 
-    private int createSalesRecord(Member member, double totalPrice) {
+    private long createSalesRecord(Member member, double totalPrice) {
         try {
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target("http://localhost:8080/IS3102_WebService-Student/webresources/commerce/")
+            WebTarget target = client.target("http://localhost:8080/IS3102_WebService-Student/webresources/commerce")
                     .path("createECommerceTransactionRecord")
                     .queryParam("memberId", member.getId())
                     .queryParam("amountPaid", totalPrice);
-            
+
             Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
             Response response = invocationBuilder.put(Entity.entity(member, MediaType.APPLICATION_JSON));
-            System.out.println("status: " + response.getStatus());
-            
-            if(response.getStatus() != 201){
+            System.out.println("status: createSalesRecord" + response.getStatus());
+
+            if (response.getStatus() != 201) {
                 return 0;
             }
+
+            SalesRecord salesRecord = response.readEntity(new GenericType<SalesRecord>() {
+            });
+            long salesRecordId = salesRecord.getSalesRecordId();
             
-            String uri = (String)response.getMetadata().getFirst("Location");
-            int salesRecordId  = Integer.parseInt(uri.substring(uri.lastIndexOf("/") + 1));
-            
+            System.out.println("SalesRecordId: createSalesRecordServlet()" + salesRecordId);
+
             return salesRecordId;
 
         } catch (Exception ex) {

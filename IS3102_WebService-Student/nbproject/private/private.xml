@@ -3,9 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/service/StoreentityFacadeREST.java</file>
-            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/service/RetailproductentityFacadeREST.java</file>
-            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/service/FurnitureentityFacadeREST.java</file>
+            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/service/ECommerceFacadeREST.java</file>
+            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/Entity/LineItem.java</file>
+            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/Entity/Itementity.java</file>
+            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/DbAccess/EcommerceEntityDb.java</file>
         </group>
     </open-files>
 </project-private>

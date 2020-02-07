@@ -48,7 +48,7 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
             
             Long countryID = (long) session.getAttribute("countryID");
             String id = request.getParameter("id");
-            String sku = request.getParameter("SHU");
+            String sku = request.getParameter("SKU");
             String price = request.getParameter("price");
             
             String name = request.getParameter("name");
@@ -109,7 +109,7 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
         try{
             Client client = ClientBuilder.newClient();
             WebTarget target = client
-                    .target("http://dmit.bulletplus.com/WebService_Mobile/webresources/entity.countryentity")
+                    .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.countryentity")
                     .path("getQuantity")
                     .queryParam("countryID", countryID)
                     .queryParam("SKU", sku);

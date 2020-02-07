@@ -1,4 +1,5 @@
 
+<%@page import="HelperClasses.Member"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="HelperClasses.ShoppingCartLineItem"%>
 <%@page import="EntityManager.WishListEntity"%>
@@ -127,6 +128,8 @@
                                                     <tbody>
                                                         <%ArrayList<ShoppingCartLineItem> shoppingCart = (ArrayList<ShoppingCartLineItem>) (session.getAttribute("shoppingCart"));
                                                             try {
+//                                                                Member member = (Member)session.getAttribute("member");
+//                                                                out.print(member.getId() + member.getEmail());
                                                                 if (shoppingCart != null && shoppingCart.size() > 0) {
                                                                     for (ShoppingCartLineItem item : shoppingCart) {
                                                         %>
@@ -140,12 +143,10 @@
                                                                 </a>
                                                             </td>
                                                             <td class="product-name">
-                                                                <a class="productDetails" href="furnitureProductDetails.jsp">Insert product name</a>
+
                                                                 <a class="productDetails" href="furnitureProductDetails.jsp?"><%=item.getName()%></a>
                                                             </td>
-                                                            <td class="product-price">
-                                                                $<span class="amount" id="price<%=item.getSKU()%>">
-                                                                    insert price here
+                                                            <td class="product-price">                                                             
                                                                 $<span class="amount" id="price<%=item.getSKU()%>">
                                                                     <%=item.getPrice()%>
                                                                 </span>
@@ -154,7 +155,7 @@
                                                                 <form enctype="multipart/form-data" method="post" class="cart">
                                                                     <div class="quantity">
                                                                         <input type="button" class="minus" value="-" onclick="minus('<%=item.getSKU()%>')">
-                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="" name="quantity" min="1" step="1" id="<%=item.getSKU()%>">
+                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="<%=item.getQuantity()%>" name="quantity" min="1" step="1" id="<%=item.getSKU()%>">
                                                                         <input type="button" class="plus" value="+" onclick="plus('<%=item.getSKU()%>', '<%=item.getName()%>',<%=item.getPrice()%>, '<%=item.getImageURL()%>')">
                                                                     </div>
                                                                 </form>
@@ -169,6 +170,7 @@
                                                             </td>
                                                         </tr>
                                                         <%
+                                                            session.setAttribute("totalPrice", finalPrice);
                                                                     }
                                                                 }
                                                             } catch (Exception ex) {

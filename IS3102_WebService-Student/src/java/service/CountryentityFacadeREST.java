@@ -1,5 +1,6 @@
 package service;
 
+import DbAccess.CountryEntityDb;
 import Entity.Countryentity;
 import java.sql.*;
 import java.util.ArrayList;
@@ -68,7 +69,24 @@ public class CountryentityFacadeREST extends AbstractFacade<Countryentity> {
     public String countREST() {
         return String.valueOf(super.count());
     }
-
+    
+    //Hello
+    @GET
+    @Path("getQuantity")
+     @Produces({"application/json"})
+        public Response getQuantity(@QueryParam("SKU") String SKU) {
+        try {
+            
+            CountryEntityDb db = new CountryEntityDb();
+            int qty = db.getQuantity(SKU);
+            return Response.ok(qty + "", MediaType.APPLICATION_JSON).build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+    
+    
     @GET
     @Path("country")
     @Produces({"application/json"})
@@ -84,6 +102,7 @@ public class CountryentityFacadeREST extends AbstractFacade<Countryentity> {
             country.setWarehouseentityList(null);
             countryList.add(country);
         }
+        
         return countryList;
     }
     
