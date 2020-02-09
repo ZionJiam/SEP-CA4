@@ -51,6 +51,9 @@
                 document.shoppingCart.submit();
             }
             function plus(SKU, name, price, imageURL) {
+
+                validateCreditDetails();
+
                 window.event.returnValue = true;
                 document.shoppingCart.action = "../../ECommerce_AddFurnitureToListServlet?SKU=" + SKU + "&price=" + price + "&name=" + name + "&imageURL=" + imageURL;
                 document.shoppingCart.submit();
@@ -72,9 +75,23 @@
                 });
             }
             function makePayment() {
-                window.event.returnValue = true;
-                document.makePaymentForm.action = "../../ECommerce_PaymentServlet";
-                document.makePaymentForm.submit();
+                console.log(validateCreditDetails());
+                if (validateCreditDetails()) {
+                    window.event.returnValue = true;
+                    document.makePaymentForm.action = "../../ECommerce_PaymentServlet";
+                    document.makePaymentForm.submit();
+                }
+
+
+            }
+
+            function validateCreditDetails() {
+                var cardNum = parseInt($("#txtCardNo").val());
+                if (cardNum == NaN || (cardNum.toString().length != 16)) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         </script>
 
@@ -170,7 +187,7 @@
                                                             </td>
                                                         </tr>
                                                         <%
-                                                            session.setAttribute("totalPrice", finalPrice);
+                                                                        session.setAttribute("totalPrice", finalPrice);
                                                                     }
                                                                 }
                                                             } catch (Exception ex) {
@@ -225,7 +242,7 @@
                                                                 <label>Card Number: </label>
                                                             </td>
                                                             <td style="padding: 5px">
-                                                                <input type="text" class="input-text text " title="cardno" id="txtCardNo" required>
+                                                                <input type="text" class="input-text text " title="cardno" id="txtCardNo" name="txtCardNo" required>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -269,6 +286,11 @@
                                                         </tbody></table>
                                                 </div>
                                             </form>
+
+                                            <script>
+
+
+                                            </script>
                                         </div>
                                     </div>
                                 </div>
@@ -338,6 +360,7 @@
             <script src="../../vendor/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
             <script src="../../vendor/rs-plugin/js/jquery.themepunch.revolution.js"></script>
             <script src="../../vendor/circle-flip-slideshow/js/jquery.flipshow.js"></script>
+            <script src="vendor/jquery-validation/dist/jquery.validate.min.js"></script>
             <script src="../../js/views/view.home.js"></script>   
         </div>
     </body>
