@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -91,7 +92,11 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
         try {
             RetailproductEntityDb db = new RetailproductEntityDb();
             List<RetailProduct> list = db.getRetailProductList(countryID);
-            
+
+            if (list == null) {
+                throw new SQLException("Unable to get retail list");
+            }
+
             GenericEntity<List<RetailProduct>> entity = new GenericEntity<List<RetailProduct>>(list) {
             };
             return Response
@@ -102,13 +107,13 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
                     .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
                     .entity(entity)
                     .build();
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
-    
+
     @GET
     @Path("getRetailProductListByCategory")
     @Produces("application/json")
@@ -116,7 +121,11 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
         try {
             RetailproductEntityDb db = new RetailproductEntityDb();
             List<RetailProduct> list = db.getRetailProductListByCategory(countryID, category);
-            
+
+            if (list == null) {
+                throw new SQLException("Unable to get retail list by category");
+            }
+
             GenericEntity<List<RetailProduct>> entity = new GenericEntity<List<RetailProduct>>(list) {
             };
             return Response
@@ -126,7 +135,7 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
                     .header("Access-Control-Allow-Credentials", "true")
                     .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
                     .entity(entity)
-                    .build();     
+                    .build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();

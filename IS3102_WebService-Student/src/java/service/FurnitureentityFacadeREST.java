@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -96,6 +97,10 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
             FurnitureproductEntityDb db = new FurnitureproductEntityDb();
             List<Furniture> list = db.getFurnitureList(countryID);
 
+            if (list == null) {
+                throw new SQLException("Unable to get furniture list");
+            }
+
             GenericEntity<List<Furniture>> entity = new GenericEntity<List<Furniture>>(list) {
             };
             return Response
@@ -121,9 +126,13 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
     public Response getFurnitureListByCategory(@QueryParam("countryID") Long countryID, @QueryParam("category") String category) {
         System.out.println("RESTful: getFurnitureListByCategory() called with countryID " + countryID + " and category " + category);
 
-        try {       
+        try {
             FurnitureproductEntityDb db = new FurnitureproductEntityDb();
             List<Furniture> list = db.getFurnitureListByCategory(countryID, category);
+
+            if (list == null) {
+                throw new SQLException("Unable to get furniture list by category");
+            }
 
             GenericEntity<List<Furniture>> entity = new GenericEntity<List<Furniture>>(list) {
             };

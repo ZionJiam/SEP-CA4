@@ -56,11 +56,9 @@ public class ECommerce_PaymentServlet extends HttpServlet {
             Member member = (Member) session.getAttribute("member");
             System.out.println("Member id: " + member.getId());
             ArrayList<ShoppingCartLineItem> shoppingCart = (ArrayList<ShoppingCartLineItem>) session.getAttribute("shoppingCart");
-            System.out.println("ECommerce_PaymentServlet 1");
             for (ShoppingCartLineItem item : shoppingCart) {
                 skuList.add(item.getSKU());
             }
-             System.out.println("ECommerce_PaymentServlet 11");
             double totalPrice = (double) session.getAttribute("totalPrice");
              System.out.println("ECommerce_PaymentServlet totalPrice:" + totalPrice);
             long salesRecordId = createSalesRecord(member, totalPrice);
@@ -181,7 +179,5 @@ public class ECommerce_PaymentServlet extends HttpServlet {
             ex.printStackTrace();
             return 0;
         }
-
     }
-
 }
