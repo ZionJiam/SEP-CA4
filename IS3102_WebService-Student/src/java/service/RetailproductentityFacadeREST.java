@@ -1,11 +1,13 @@
 package service;
 
+import DbAccess.RetailproductEntityDb;
 import Entity.RetailProduct;
 import Entity.Retailproductentity;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -81,41 +83,49 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
     public String countREST() {
         return String.valueOf(super.count());
     }
-    
-       // Added GET method to get the list of retail products to be shown in allRetailProducts.jsp
+
+    // Added GET method to get the list of retail products to be shown in allRetailProducts.jsp
     @GET
     @Path("getRetailProductList")
     @Produces("application/json")
-     public Response getRetailProductList(@QueryParam("countryID") Long countryID) {
-                try {
-            List<RetailProduct> list = new ArrayList<>();
-            String stmt = "";
-            PreparedStatement ps;
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
- 
-            if (countryID == null) {
-                stmt = "SELECT i.ID as id, i.NAME as name, r.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category FROM itementity i, retailproductentity r where i.ID=r.ID and i.ISDELETED=FALSE;";
-                ps = conn.prepareStatement(stmt);
-            } else {
-                stmt = "SELECT i.ID as id, i.NAME as name, r.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category, ic.RETAILPRICE as price FROM itementity i, retailproductentity r, item_countryentity ic where i.ID=r.ID and i.ID=ic.ITEM_ID and i.ISDELETED=FALSE and ic.COUNTRY_ID=?;";
-                ps = conn.prepareStatement(stmt);
-                ps.setLong(1, countryID);
+    public Response getRetailProductList(@QueryParam("countryID") Long countryID) {
+        try {
+            RetailproductEntityDb db = new RetailproductEntityDb();
+            List<RetailProduct> list = db.getRetailProductList(countryID);
+
+            if (list == null) {
+                throw new SQLException("Unable to get retail list");
             }
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                RetailProduct r = new RetailProduct();
-                r.setId(rs.getLong("id"));
-                r.setName(rs.getString("name"));
-                r.setImageUrl(rs.getString("imageURL"));
-                r.setSKU(rs.getString("sku"));
-                r.setDescription(rs.getString("description"));
-                r.setType(rs.getString("type"));
-                r.setCategory(rs.getString("category"));
-                if (countryID != null) {
-                    r.setPrice(rs.getDouble("price"));
-                }
-                list.add(r);
+
+            GenericEntity<List<RetailProduct>> entity = new GenericEntity<List<RetailProduct>>(list) {
+            };
+            return Response
+                    .status(200)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                    .entity(entity)
+                    .build();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("getRetailProductListByCategory")
+    @Produces("application/json")
+    public Response getRetailProductListByCategory(@QueryParam("countryID") Long countryID, @QueryParam("category") String category) {
+        try {
+            RetailproductEntityDb db = new RetailproductEntityDb();
+            List<RetailProduct> list = db.getRetailProductListByCategory(countryID, category);
+
+            if (list == null) {
+                throw new SQLException("Unable to get retail list by category");
             }
+
             GenericEntity<List<RetailProduct>> entity = new GenericEntity<List<RetailProduct>>(list) {
             };
             return Response
@@ -130,7 +140,7 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
             ex.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-     }
+    }
 
     @Override
     protected EntityManager getEntityManager() {
