@@ -86,12 +86,94 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return list;
     }
 
+    // New Code 
+    @GET
+    @Path("profile")
+    @Produces("application/json")
+    public Response getMemberProfile(@QueryParam("email") String email) {
+        Member member = new Member();
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+            String stmt = "SELECT * FROM memberentity m WHERE m.EMAIL=?";
+            PreparedStatement ps = conn.prepareStatement(stmt);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            rs.next();
+            // Set Values
+            member.setId(rs.getLong("ID"));
+            member.setName(rs.getString("NAME"));
+            member.setAddress(rs.getString("ADDRESS"));
+            member.setAge(rs.getInt("AGE"));
+            member.setCity(rs.getString("CITY"));
+            member.setEmail(rs.getString("EMAIL"));
+            member.setIncome(rs.getInt("INCOME"));
+            member.setSecurityQuestion(rs.getInt("SECURITYQUESTION"));
+            member.setSecurityAnswer(rs.getString("SECURITYANSWER"));
+            member.setPhone(rs.getString("PHONE"));
+            
+            conn.close();
+            return Response.status(200).entity(member).build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
+
+    @PUT
+    @Path("update")
+    @Consumes({"application/json"})
+    public Response updateMember(@QueryParam("id") Long id, @QueryParam("email") String email, @QueryParam("name") String name, @QueryParam("phone") String phone, @QueryParam("country") String country, @QueryParam("address") String address, @QueryParam("securityQuestion") int securityQuestion, @QueryParam("securityAnswer") String securityAnswer, @QueryParam("age") int age, @QueryParam("income") int income, @QueryParam("password") String password) {
+        boolean isSuccess = false;
+
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+
+            String stmt = "UPDATE memberentity m SET m.NAME = ?, m.PHONE = ?, m.CITY = ?"
+                    + ", m.ADDRESS = ?, m.SECURITYQUESTION = ?, m.SECURITYANSWER = ?"
+                    + ", m.AGE = ?, m.INCOME = ? WHERE m.ID = ?";
+
+            PreparedStatement ps = conn.prepareStatement(stmt);
+
+            // Set prepare statement
+            ps.setString(1, name);
+            ps.setString(2, phone);
+            ps.setString(3, country);
+            ps.setString(4, address);
+            ps.setInt(5, securityQuestion);
+            ps.setString(6, securityAnswer);
+            ps.setInt(7, age);
+            ps.setInt(8, income);
+            // Set id   
+            ps.setLong(9, id);
+
+            //Exceute prepare statement
+            int result = ps.executeUpdate();
+            // Change Password
+            if (!password.isEmpty()) {
+                isSuccess = updatePassword(conn, id, password);
+            }
+            
+            if (result > 0 && (password.isEmpty() ^ isSuccess)) {
+                return Response.status(Response.Status.OK).build();
+            }
+            System.out.println(result);
+            conn.close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return Response.status(Response.Status.BAD_REQUEST)
+                .build();
+    }
 
     //this function is used by ECommerce_MemberLoginServlet
     @GET
     @Path("login")
     @Produces("application/json")
     public Response loginMember(@QueryParam("email") String email, @QueryParam("password") String password) {
+        System.out.println("loginMem");
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
             String stmt = "SELECT * FROM memberentity m WHERE m.EMAIL=?";
@@ -124,6 +206,31 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return Arrays.toString(salt);
     }
 
+    public boolean updatePassword(Connection conn, Long id, String password) {
+        try {
+            String stmt = "UPDATE memberentity m SET m.PASSWORDSALT = ?, m.PASSWORDHASH = ? WHERE m.ID = ?";
+            PreparedStatement ps = conn.prepareStatement(stmt);
+
+            String passwordSalt = generatePasswordSalt();
+            String passwordHash = generatePasswordHash(passwordSalt, password);
+
+            ps.setString(1, passwordSalt);
+            ps.setString(2, passwordHash);
+            ps.setLong(3, id);
+
+            int result = ps.executeUpdate();
+
+            if (result > 0) {
+                return true;
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
+
+    }
 
     public String generatePasswordHash(String salt, String password) {
         String passwordHash = null;

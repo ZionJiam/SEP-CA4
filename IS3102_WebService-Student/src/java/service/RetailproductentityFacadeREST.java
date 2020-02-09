@@ -1,11 +1,13 @@
 package service;
 
+import DbAccess.RetailproductEntityDb;
 import Entity.RetailProduct;
 import Entity.Retailproductentity;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -80,6 +82,64 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
     @Produces("text/plain")
     public String countREST() {
         return String.valueOf(super.count());
+    }
+
+    // Added GET method to get the list of retail products to be shown in allRetailProducts.jsp
+    @GET
+    @Path("getRetailProductList")
+    @Produces("application/json")
+    public Response getRetailProductList(@QueryParam("countryID") Long countryID) {
+        try {
+            RetailproductEntityDb db = new RetailproductEntityDb();
+            List<RetailProduct> list = db.getRetailProductList(countryID);
+
+            if (list == null) {
+                throw new SQLException("Unable to get retail list");
+            }
+
+            GenericEntity<List<RetailProduct>> entity = new GenericEntity<List<RetailProduct>>(list) {
+            };
+            return Response
+                    .status(200)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                    .entity(entity)
+                    .build();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("getRetailProductListByCategory")
+    @Produces("application/json")
+    public Response getRetailProductListByCategory(@QueryParam("countryID") Long countryID, @QueryParam("category") String category) {
+        try {
+            RetailproductEntityDb db = new RetailproductEntityDb();
+            List<RetailProduct> list = db.getRetailProductListByCategory(countryID, category);
+
+            if (list == null) {
+                throw new SQLException("Unable to get retail list by category");
+            }
+
+            GenericEntity<List<RetailProduct>> entity = new GenericEntity<List<RetailProduct>>(list) {
+            };
+            return Response
+                    .status(200)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                    .entity(entity)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @Override

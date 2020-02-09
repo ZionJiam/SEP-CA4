@@ -1,4 +1,4 @@
-package B_servlets;
+    package B_servlets;
 
 import CorporateManagement.FacilityManagement.FacilityManagementBeanLocal;
 import EntityManager.CountryEntity;
@@ -25,7 +25,7 @@ import HelperClasses.Member;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.core.GenericType;
 
-@WebServlet(name= "ECommerce_GetMember", urlPatterns = {"/ECommerce_GetMember"})
+@WebServlet(name = "ECommerce_GetMember", urlPatterns = {"/ECommerce_GetMember"})
 public class ECommerce_GetMember extends HttpServlet {
 
     @EJB
@@ -41,11 +41,21 @@ public class ECommerce_GetMember extends HttpServlet {
             String email = (String) session.getAttribute("memberEmail");
             Member member = getMember(email);
 
+            String goodMsg = request.getParameter("goodMsg");
+            String errMsg = request.getParameter("errMsg");
+
             if (member != null) {
                 session.setAttribute("memberName", member.getName());
-
                 session.setAttribute("member", member);
-                response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp");
+
+                if (goodMsg != null) {
+                    response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp?goodMsg=" + goodMsg);
+                } else if (errMsg != null) {
+                    response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp?errMsg=" + errMsg);
+                } else {
+                    response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp");
+                }
+
             } else {
                 result = "Login fail. Username or password is wrong or account is not activated.";
                 response.sendRedirect("/IS3102_Project-war/B/SG/memberLogin.jsp?errMsg=" + result);
