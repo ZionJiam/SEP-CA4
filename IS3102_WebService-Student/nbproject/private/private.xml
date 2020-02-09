@@ -2,11 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/service/ECommerceFacadeREST.java</file>
-            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/service/CountryentityFacadeREST.java</file>
-            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/DbAccess/CountryEntityDb.java</file>
-            <file>file:/C:/SEP_CA/SEP-CA4(Zion)/IS3102_WebService-Student/src/java/DbAccess/EcommerceEntityDb.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
