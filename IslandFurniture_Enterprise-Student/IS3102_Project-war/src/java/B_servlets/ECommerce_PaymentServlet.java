@@ -60,7 +60,7 @@ public class ECommerce_PaymentServlet extends HttpServlet {
                 skuList.add(item.getSKU());
             }
             double totalPrice = (double) session.getAttribute("totalPrice");
-             System.out.println("ECommerce_PaymentServlet totalPrice:" + totalPrice);
+            System.out.println("ECommerce_PaymentServlet totalPrice:" + totalPrice);
             long salesRecordId = createSalesRecord(member, totalPrice);
             int itemCount = 0;
 
@@ -80,7 +80,7 @@ public class ECommerce_PaymentServlet extends HttpServlet {
                 String goodMsg = "Transaction Successful";
                 response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?goodMsg=" + goodMsg);
             }
-            
+
             System.out.println("ECommerce_PaymentServlet 3");
         } catch (Exception ex) {
             out.println("\n\n " + ex.getMessage());
@@ -170,7 +170,7 @@ public class ECommerce_PaymentServlet extends HttpServlet {
             SalesRecord salesRecord = response.readEntity(new GenericType<SalesRecord>() {
             });
             long salesRecordId = salesRecord.getSalesRecordId();
-            
+
             System.out.println("SalesRecordId: createSalesRecordServlet()" + salesRecordId);
 
             return salesRecordId;

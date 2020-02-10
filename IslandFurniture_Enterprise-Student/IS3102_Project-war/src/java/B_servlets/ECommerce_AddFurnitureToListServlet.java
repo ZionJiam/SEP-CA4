@@ -21,16 +21,17 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 /**
  *
  * @author Myridian Star
  */
 @WebServlet(name = "ECommerce_AddFurnitureToListServlet", urlPatterns = {"/ECommerce_AddFurnitureToListServlet"})
 public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
-    
+
     ArrayList<ShoppingCartLineItem> shoppingCartItems = new ArrayList<>();
     private String message;
-    
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -38,22 +39,22 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
         String urlPrefix = (String) session.getAttribute("URLprefix");
         PrintWriter out = response.getWriter();
         System.out.println("ECommerce_AddFurnitureToListServlet START");
-        try{
+        try {
             // http:// is the URL prefix, which specifies the protocol used to access the location. techterms.com – the server name or IP address of the server. /definition/url – the path to the directory or file.
-            
-            if (urlPrefix==null){
+
+            if (urlPrefix == null) {
                 response.sendRedirect("/IS3102_Project-war/B/SG/index.jsp");
                 return;
             }
-            
+
             Long countryID = (long) session.getAttribute("countryID");
             String id = request.getParameter("id");
             String sku = request.getParameter("SKU");
             String price = request.getParameter("price");
-            
+
             String name = request.getParameter("name");
             String imageUrl = request.getParameter("imageURL");
-            
+
             ShoppingCartLineItem oneItem = new ShoppingCartLineItem();
             oneItem.setId(id);
             oneItem.setSKU(sku);
@@ -63,50 +64,45 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
             oneItem.setCountryID(countryID);
             oneItem.setQuantity(1);//one item wat
             int quantity = seeQuantity(countryID, sku);//countryID need be Long
-            
+
             ArrayList<ShoppingCartLineItem> shoppingCartItems = (ArrayList<ShoppingCartLineItem>) session.getAttribute("shoppingCart");
-            if(quantity<1){
-                response.sendRedirect("/IS3102_Project-war/B/"+urlPrefix+"shoppingCart.jsp?errMsg=Item unavailable. Cannot add to cart.");
+            if (quantity < 1) {
+                response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?errMsg=Item unavailable. Cannot add to cart.");
                 return;
             }
-            if(shoppingCartItems==null){
+            if (shoppingCartItems == null) {
                 shoppingCartItems = new ArrayList<ShoppingCartLineItem>();
                 shoppingCartItems.add(oneItem);
-            } 
-            else if (!shoppingCartItems.contains(oneItem)){
+            } else if (!shoppingCartItems.contains(oneItem)) {
                 shoppingCartItems.add(oneItem);
-            } 
-            else {
-                if (shoppingCartItems.contains(oneItem)){
-                    for (ShoppingCartLineItem item : shoppingCartItems){
-                        if(item.equals(oneItem)){
-                            if(quantity<item.getQuantity()+1){
-                                response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?errMsg=Item unavailable. Cannot add to cart.");
-                                return; //64.
-                            }
-                            else{
-                                item.setQuantity(item.getQuantity()+1);
-                            }
-                            System.out.println("item quantity: "+item.getQuantity());
-                            break;
+            } else if (shoppingCartItems.contains(oneItem)) {
+                for (ShoppingCartLineItem item : shoppingCartItems) {
+                    if (item.equals(oneItem)) {
+                        if (quantity < item.getQuantity() + 1) {
+                            response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?errMsg=Item unavailable. Cannot add to cart.");
+                            return; //64.
+                        } else {
+                            item.setQuantity(item.getQuantity() + 1);
                         }
+                        System.out.println("item quantity: " + item.getQuantity());
+                        break;
                     }
                 }
             }
             session.setAttribute("shoppingCart", shoppingCartItems);
-            response.sendRedirect("/IS3102_Project-war/B/"+urlPrefix+"shoppingCart.jsp?goodMsg=Item has been added.");
-        } catch(Exception ex){
+            response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?goodMsg=Item has been added.");
+        } catch (Exception ex) {
             System.out.println("Exception Occured!");
             System.out.println(ex);
-            response.sendRedirect("/IS3102_Project-war/B/"+urlPrefix+"Exception occured. Item was not added to cart.");
+            response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "Exception occured. Item was not added to cart.");
         }
     }
-    
-    public int seeQuantity(Long countryID, String sku){
+
+    public int seeQuantity(Long countryID, String sku) {
         //debug
         System.out.println("seeQuantity START");
-        System.out.println("SKU = "+sku);
-        try{
+        System.out.println("SKU = " + sku);
+        try {
             Client client = ClientBuilder.newClient();
             WebTarget target = client
                     .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.countryentity")
@@ -115,18 +111,18 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
                     .queryParam("SKU", sku);
             //from sep practical
             Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-            Response response  = invocationBuilder.get();
-            if(response.getStatus()!=200){
+            Response response = invocationBuilder.get();
+            if (response.getStatus() != 200) {
                 return 0;
             }
             String incomingResponse = (String) response.readEntity(String.class);
             return Integer.parseInt(incomingResponse);
-        } catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println("Exception Occured!");
             System.out.println(ex);
             return 0;// no QUANtity
         }
-        
+
         //return 0;
     }
 
@@ -168,5 +164,5 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-  //wot is this
+    //wot is this
 }

@@ -10,31 +10,32 @@ import javax.servlet.http.*;
 
 @WebServlet(name = "ECommerce_MinusFurnitureToListServlet", urlPatterns = {"/ECommerce_MinusFurnitureToListServlet"})
 public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
-    private String URLprefix = "";
-    
+
+    private String urlPrefix = "";
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        
+
         try {
             HttpSession session = request.getSession();
-            URLprefix = (String) session.getAttribute("URLprefix");
-            
-            if (URLprefix == null) {
+            urlPrefix = (String) session.getAttribute("URLprefix");
+
+            if (urlPrefix == null) {
                 response.sendRedirect("/IS3102_Project-war/B/selectCountry.jsp");
             }
 
             String SKU = request.getParameter("SKU");
             ArrayList<ShoppingCartLineItem> shoppingCart = (ArrayList<ShoppingCartLineItem>) session.getAttribute("shoppingCart");
             if (shoppingCart == null) {
-                response.sendRedirect("/IS3102_Project-war/B/"+URLprefix+"shoppingCart.jsp?errMsg=Error reducing item quantity.");
+                response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?errMsg=Error reducing item quantity.");
             } else {
                 for (ShoppingCartLineItem item : shoppingCart) {
                     if (item.getSKU().equals(SKU)) {
                         if (item.getQuantity() > 1) {
                             item.setQuantity(item.getQuantity() - 1);
                         } else {
-                            response.sendRedirect("/IS3102_Project-war/B/"+URLprefix+"shoppingCart.jsp?errMsg=Error. Quantity cannot be less than 1.");
+                            response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?errMsg=Error. Quantity cannot be less than 1.");
                             return;
                         }
                         break;
@@ -42,13 +43,14 @@ public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
                 }
             }
             session.setAttribute("shoppingCart", shoppingCart);
-            response.sendRedirect("/IS3102_Project-war/B/" + URLprefix + "shoppingCart.jsp?goodMsg=Item quantity reduced successfully!");
+            response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?goodMsg=Item quantity reduced successfully!");
         } catch (Exception ex) {
             out.println(ex);
             ex.printStackTrace();
-            response.sendRedirect("/IS3102_Project-war/B/" + URLprefix + "shoppingCart.jsp?errMsg=Error reducing item quantity.");
+            response.sendRedirect("/IS3102_Project-war/B/" + urlPrefix + "shoppingCart.jsp?errMsg=Error reducing item quantity.");
         }
     }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
